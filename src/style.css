@@ -1,0 +1,12 @@
+
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(135deg,#ffd7e8,#d4e3ff,#e8fffa)}
+.card{width:100%;max-width:1100px;height:92vh;margin:20px auto;border-radius:14px;overflow:hidden;position:relative;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(10px)}
+header{padding:12px;display:flex;align-items:center;justify-content:space-between}
+#chat-output{padding:18px;overflow:auto;height:calc(92vh - 220px)}
+.bubble{max-width:70%;padding:10px 14px;border-radius:12px}
+.user{align-self:flex-end;background:#111;color:#fff}
+.ai{align-self:flex-start;background:rgba(255,255,255,0.42)}
+footer{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,0.03)}
+.input{flex:1;padding:12px;border-radius:10px}
+.btn{padding:10px 12px;border-radius:8px;background:linear-gradient(135deg,#4f8bff,#7bb8ff);color:white;border:none}
+#ultimate-cutscene,#cg-popup,#cg-gallery,#dorm,#live2d-viewer{transition:all .35s}
