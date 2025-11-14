@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hoshino — Ultimate Blue Archive Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./styles/global.css">
+</head>
+<body><div class="card">
+    <header>
+        <div style="display:flex;align-items:center;gap:12px">
+            <img src="https://img.icons8.com/color/96/angel.png" style="width:42px;height:42px">
+            <div>
+                <div style="font-weight:700">Hoshino — Blue Archive Engine</div>
+                <div style="font-size:12px;opacity:.7">Ultimate dev preview</div>
+            </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+            <button id="open-settings" class="btn">Settings</button>
+            <button id="open-gallery-btn" class="btn">Gallery</button>
+            <button id="open-inv-btn" class="btn">Inventory</button>
+            <button id="open-dorm-btn" class="btn">Dorm</button>
+            <button id="open-battle-btn" class="btn">Battle</button>
+            <button id="open-teleport-btn" class="btn">Teleport</button>
+        </div>
+    </header><div id="chat-output"></div>
+
+<footer>
+    <input id="chat-input" class="input" placeholder="Ketik pesan..." />
+    <button id="send-btn" class="btn">Send</button>
+    <button id="save-slot" class="btn">Save</button>
+    <button id="load-slot" class="btn">Load</button>
+</footer>
+
+</div><!-- --- Existing overlays (cutscenes, HUD, gallery, CG popup, etc.) are preserved below --- --><!-- CG Popup (kept) --><div id="cg-popup" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.9);z-index:900">
+    <img id="cg-img" src="" style="max-width:80%;border-radius:10px;box-shadow:0 0 30px #6aa9ff">
+    <button onclick="closeCG()" style="position:absolute;top:20px;right:20px" class="btn">Close</button>
+</div><!-- Gallery --><div id="cg-gallery" style="position:fixed;inset:0;display:none;background:rgba(0,0,0,0.9);z-index:890;padding:20px;overflow:auto;color:#fff">
+    <h2>CG Gallery</h2>
+    <div id="cg-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px"></div>
+    <button onclick="toggleGallery()" class="btn" style="position:fixed;top:18px;right:18px">Close</button>
+</div><!-- Inventory (kept minimal) --><div id="inventory" style="position:fixed;left:50%;top:12%;transform:translateX(-50%);display:none;background:#08101c;padding:12px;color:#dbeafe;border-radius:10px;z-index:880">
+    <h3>Inventory</h3>
+    <div id="inventory-list" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    <button id="inv-close" class="btn">Close</button>
+</div><!-- Dorm --><div id="dorm" style="position:fixed;inset:0;display:none;background:rgba(0,0,0,0.7);z-index:880;color:#fff;align-items:center;justify-content:center;display:flex">
+    <div style="width:80%;max-width:1000px;background:#fff;padding:14px;border-radius:10px;color:#111">
+        <h3>Dorm Interaction</h3>
+        <div id="dorm-log" style="height:260px;overflow:auto;background:#f3f6ff;padding:8px;border-radius:6px"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+            <button id="dorm-close" class="btn">Close</button>
+        </div>
+    </div>
+</div><!-- Live2D viewer placeholder --><div id="live2d-viewer" style="position:fixed;left:50%;bottom:80px;transform:translateX(-50%);display:flex;align-items:center;justify-content:center;z-index:880;width:560px;height:420px;background:rgba(255,255,255,0.02);border-radius:10px;color:#dbeafe">
+    <div style="text-align:center">
+        <div style="font-weight:700">Live2D Viewer</div>
+        <div style="font-size:12px;opacity:.8">Load model files to enable real Live2D. See console for instructions.</div>
+        <button id="load-live2d-btn" class="btn">Load Live2D</button>
+    </div>
+</div><!-- Ultimate full-screen cutscene --><div id="ultimate-cutscene" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000;background:black;color:white;flex-direction:column">
+    <img src="https://i.ibb.co/zV4z5jF/hoshino-cutin.png" style="max-width:70%;filter:drop-shadow(0 0 35px #6aa9ff)">
+    <div style="margin-top:18px;font-size:28px;font-weight:800">EX-SKILL ACTIVATED</div>
+</div><!-- Teleport menu --><div id="teleport-menu" style="position:fixed;left:0;bottom:0;width:100%;display:none;background:linear-gradient(180deg,rgba(10,15,30,0.95),rgba(10,15,30,0.85));padding:18px;z-index:880;color:#dbeafe">
+    <h3>Kivotos Teleport Terminal</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="teleport('Abydos')">Abydos</button>
+        <button class="btn" onclick="teleport('SCHALE HQ')">SCHALE HQ</button>
+        <button class="btn" onclick="teleport('Millennium')">Millennium</button>
+        <button class="btn" onclick="teleport('Gehenna')">Gehenna</button>
+        <button class="btn" onclick="teleport('Trinity')">Trinity</button>
+        <button class="btn" onclick="teleport('Red Winter')">Red Winter</button>
+    </div>
+</div><!-- Story log --><div id="story-log" style="position:fixed;right:0;top:0;height:100%;width:320px;background:rgba(0,0,0,0.7);color:#dbeafe;padding:12px;overflow:auto;z-index:880;display:none">
+    <h3>Story Log</h3>
+    <div id="story-content"></div>
+    <button id="story-close" class="btn">Close</button>
+</div><!-- Saved slots UI --><div id="save-ui" style="position:fixed;left:50%;top:20%;transform:translateX(-50%);z-index:920;background:#08101c;padding:12px;color:#dbeafe;border-radius:10px;display:none">
+    <h3>Save / Load Slots</h3>
+    <div id="slots" style="display:flex;gap:8px;flex-wrap:wrap;max-width:760px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+        <button id="save-close" class="btn">Close</button>
+    </div>
+</div><!-- Audio placeholders --><audio id="voice-cg" src="https://files.catbox.moe/abcd5.mp3"></audio> <audio id="ex-voice" src="https://files.catbox.moe/abcd6.mp3"></audio>
+
+<script src="./scripts/app.js"></script>// 3. Call loadLive2DModel(urlToModelJson) — this script shows how to do it in the console.
+
+async function loadLive2DModel(url){ console.log('Attempting to load Live2D model from', url); // This code requires the Live2D SDK to be included by the developer. if(!window.live2d){ console.warn('Live2D SDK not found. Please include Live2D Web SDK to enable full rig.'); return; } try{ const model = await window.live2d.loadModel(url); const viewer = document.getElementById('live2d-viewer'); // append model canvas/view viewer.innerHTML = ''; viewer.appendChild(model.view); console.log('Live2D model loaded'); }catch(e){ console.error('Live2D load failed', e); } }
+
+// UI hook for load button — shows instructions in console document.getElementById('load-live2d-btn').addEventListener('click', ()=>{ showNotif('Live2D loader: check console for instructions.'); console.log('Live2D integration steps:'); console.log('1) Include SDK: <script src="https://unpkg.com/@live2djs/core@latest/dist/live2d.min.js"></script>'); console.log('2) Call loadLive2DModel("/path/to/model.json")'); });
+
+// ----------------------------------------------------------------- // 2) Turn-based Raid Boss (enhanced) // ----------------------------------------------------------------- let raidActive = false; let raidState = null; // { bossHP, bossMax, turn: 'player'|'boss', queue: [] }
+
+function startEnhancedRaid(bossName='ANCIENT SANDWORM', bossMax=500){ raidActive = true; raidState = { bossName, bossHP:bossMax, bossMax, turn:'player' }; openBattleUI(true); addStory('Raid','Raid started: '+bossName); showNotif('Raid Started: '+bossName); }
+
+function playerAction(action){ if(!raidActive) return; if(raidState.turn !== 'player'){ showNotif('Tunggu giliranmu...'); return; } let dmg = 0; if(action==='attack'){ dmg = Math.floor(rand(18,42)); } if(action==='skill'){ dmg = Math.floor(rand(60,120)); playUltimate(); } if(action==='guard'){ dmg = 0; showNotif('Guard! Reduced damage next boss turn'); } // apply damage if(dmg>0){ raidState.bossHP = Math.max(0, raidState.bossHP - dmg); spawnDamage(dmg); addStory('Combat','Player dealt '+dmg+' damage'); } raidState.turn = 'boss'; updateRaidHud(); // boss turn setTimeout(()=>bossTurn(), 900 + Math.random()*800); }
+
+function bossTurn(){ if(!raidActive) return; const dmg = Math.floor(rand(12,60)); setHP(hp - dmg); // player/Hoshino takes damage addStory('Combat','Boss dealt '+dmg+' damage'); raidState.turn = 'player'; updateRaidHud(); if(raidState.bossHP<=0){ endRaid(true); } }
+
+function updateRaidHud(){ // update HUD if exists (we reuse previous boss-bar if present) const bossText = document.getElementById('boss-hp-text'); const bossHpEl = document.getElementById('boss-hp'); if(bossText){ bossText.innerText = 'HP: '+Math.max(0, Math.round((raidState.bossHP/raidState.bossMax)*100))+'%'; } if(bossHpEl){ bossHpEl.style.width = Math.max(0, (raidState.bossHP/raidState.bossMax)*100)+'%'; } }
+
+function endRaid(victory){ raidActive = false; addStory('Raid', victory? 'Boss defeated!' : 'Raid failed'); showNotif(victory? 'Boss Defeated!' : 'Raid Failed'); openBattleUI(false); }
+
+// hooks to UI (buttons) function openBattleUI(open){ const battle = document.getElementById('battle-ui') || null; if(battle){ battle.style.transform = open? 'translateY(0)' : 'translateY(100%)'; } }
+
+// extend previously created buttons document.getElementById('open-battle-btn').addEventListener('click', ()=>{ startEnhancedRaid(); });
+
+// ----------------------------------------------------------------- // 3) Advanced Dialogue Branching (simple VN engine) // ----------------------------------------------------------------- // Branching script format: array of nodes with id, text, choices[{label, goto, effect}] const vnScripts = { start: { id:'start', text:'Hoshino looks at you with sleepy eyes. What do you say?', choices:[ {label:'Compliment', goto:'compliment', effect:()=>setBond(bond+3)}, {label:'Tease', goto:'tease', effect:()=>setBond(bond+1)} ] }, compliment:{ id:'compliment', text:"Hoshino blushes. 'Oji-san... kamu baik.'", choices:[{label:'Hug', goto:'hug', effect:()=>setBond(bond+5)},{label:'Back', goto:'start'}] }, tease:{ id:'tease', text:"Hoshino pouts, 'Apa kamu mau lihat aku marah?'", choices:[{label:'Apologize', goto:'start', effect:()=>setBond(bond+2)},{label:'Keep teasing', goto:'start', effect:()=>setBond(bond-1)}] }, hug:{ id:'hug', text:"Hoshino rests her head on your shoulder. Bond +10.", choices:[] } };
+
+function runVN(nodeId='start'){ const node = vnScripts[nodeId]; if(!node) return; appendBubble(node.text,true); if(node.choices && node.choices.length>0){ const container = document.createElement('div'); container.style.display='flex'; container.style.gap='8px'; node.choices.forEach(ch => { const b = document.createElement('button'); b.className='btn'; b.innerText = ch.label; b.onclick = ()=>{ if(ch.effect) ch.effect(); container.remove(); runVN(ch.goto); }; container.appendChild(b); }); chatOut.appendChild(container); chatOut.scrollTop = chatOut.scrollHeight; } }
+
+// run VN demo on load setTimeout(()=>{ runVN('start'); }, 1400);
+
+// ----------------------------------------------------------------- // 4) Save / Load multiple save slots // ----------------------------------------------------------------- const MAX_SLOTS = 6; function getSaveKey(slot){ return 'hoshino_save_slot_'+slot; }
+
+function saveToSlot(slot){ const state = { bond, hp, mp, inventory:inventoryData, unlockedCG, story: document.getElementById('story-content').innerHTML }; localStorage.setItem(getSaveKey(slot), JSON.stringify(state)); showNotif('Saved to slot '+slot); } function loadFromSlot(slot){ const raw = localStorage.getItem(getSaveKey(slot)); if(!raw){ showNotif('Empty slot'); return; } const state = JSON.parse(raw); setBond(state.bond||0); setHP(state.hp||100); setMP(state.mp||100); inventoryData = state.inventory || inventoryData; saveInventory(); renderInventory(); unlockedCG = state.unlockedCG || unlockedCG; saveCG(); document.getElementById('story-content').innerHTML = state.story || document.getElementById('story-content').innerHTML; showNotif('Loaded slot '+slot); }
+
+// save/load UI function openSaveUI(){ const su = document.getElementById('save-ui'); su.style.display='block'; const slots = document.getElementById('slots'); slots.innerHTML=''; for(let i=1;i<=MAX_SLOTS;i++){ const el=document.createElement('div'); el.style.border='1px solid rgba(255,255,255,0.06)'; el.style.padding='8px'; el.style.borderRadius='8px'; el.style.minWidth='140px'; el.innerHTML = <div>Slot ${i}</div><div style='margin-top:8px;display:flex;gap:6px'><button class='btn' onclick='saveToSlot(${i})'>Save</button><button class='btn' onclick='loadFromSlot(${i})'>Load</button></div>; slots.appendChild(el); } }
+
+document.getElementById('save-slot').addEventListener('click', openSaveUI); document.getElementById('load-slot').addEventListener('click', openSaveUI);
+
+// close save UI document.getElementById('save-close').addEventListener('click', ()=>{ document.getElementById('save-ui').style.display='none'; });
+
+// ----------------------------------------------------------------- // 5) Emotion-based AI personality switching // ----------------------------------------------------------------- // personalities: 'sleepy' (default), 'serious', 'playful', 'strict' let personality = localStorage.getItem('hoshino_personality')||'sleepy'; function setPersonality(p){ personality = p; localStorage.setItem('hoshino_personality',p); showNotif('Personality: '+p); }
+
+// askAI prompt wrapper that injects personality + roleplay async function askAI(prompt){ // Developer: replace this with your real API call or chosen LLM endpoint. // For demo we mock a reply influenced by personality and mood. const moodSeed = mood || 'neutral'; const p = personality; // Mocked reply generator (replace with network call when API_KEY set) await new Promise(r=>setTimeout(r,600)); let base = ''; if(p==='sleepy') base = Uhe~ Oji-san... ${prompt.slice(0,80)} ; if(p==='playful') base = Hehe~ Oji-san itu lucu! ${prompt.slice(0,60)} ; if(p==='serious') base = Baik. ${prompt.slice(0,80)} ; if(p==='strict') base = Jangan main-main. ${prompt.slice(0,80)} ; // mood influence if(mood==='happy') base += " Hati Oji-san hangat."; if(mood==='tired') base += " Oji-san ingin tidur..."; return base + " (Uhe~ simulated reply)"; }
+
+// personality UI quick toggles function renderPersonalityUI(){ const node = document.createElement('div'); node.style.position='fixed'; node.style.left='20px'; node.style.top='140px'; node.style.zIndex='950'; node.style.background='rgba(0,0,0,0.5)'; node.style.padding='8px'; node.style.borderRadius='8px'; node.innerHTML = <div style='color:#dbeafe;font-weight:700;margin-bottom:6px'>Personality</div>; ['sleepy','playful','serious','strict'].forEach(p=>{ const b=document.createElement('button'); b.className='btn'; b.style.margin='4px'; b.innerText=p; b.onclick=()=>setPersonality(p); node.appendChild(b); }); document.body.appendChild(node); } renderPersonalityUI();
+
+// ----------------------------------------------------------------- // 6) Multizone Hub (multiple regions + transitions) // ----------------------------------------------------------------- let currentZone = 'Abydos'; function teleport(zone){ currentZone = zone; showNotif('Teleported to '+zone); addStory('Teleport', 'Traveled to '+zone); playZoneTransition(zone); } function playZoneTransition(zone){ // simple fade + story entry const overlay = document.createElement('div'); overlay.style.position='fixed'; overlay.style.inset='0'; overlay.style.background='rgba(0,0,0,0.85)'; overlay.style.zIndex='920'; overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.color='#fff'; overlay.style.fontSize='22px'; overlay.innerText = 'Entering '+zone; document.body.appendChild(overlay); setTimeout(()=>{ overlay.remove(); },1200); }
+
+// ----------------------------------------------------------------- // Hook send button to call AI auto-reply + streaming typing + history save // ----------------------------------------------------------------- let history = JSON.parse(localStorage.getItem('history')||'[]'); function saveHistoryEntry(role,text){ history.push({role,text,t:Date.now()}); localStorage.setItem('history', JSON.stringify(history)); }
+
+sendBtn.addEventListener('click', async ()=>{ const text = input.value.trim(); if(!text) return; appendBubble(text,false); saveHistoryEntry('user',text); input.value=''; // typing placeholder const typing = document.createElement('div'); typing.className='bubble ai'; typing.innerText='Hoshino mengetik...'; chatOut.appendChild(typing); chatOut.scrollTop = chatOut.scrollHeight; // ask AI const reply = await askAI(text); typing.remove(); // streaming effect const aiB = document.createElement('div'); aiB.className='bubble ai'; chatOut.appendChild(aiB); for(let i=0;i<reply.length;i++){ aiB.innerText += reply[i]; chatOut.scrollTop = chatOut.scrollHeight; await new Promise(r=>setTimeout(r,12)); } saveHistoryEntry('ai',reply); onAIMessage(); });
+
+function showNotif(t){ const el = document.getElementById('notif') || document.createElement('div'); el.id='notif'; el.className='notif'; el.style.position='fixed'; el.style.right='20px'; el.style.top='20px'; el.style.padding='10px 14px'; el.style.background='linear-gradient(90deg,#4f8bff,#7bb8ff)'; el.style.color='white'; el.style.borderRadius='10px'; el.innerText=t; document.body.appendChild(el); setTimeout(()=>el.remove(),2600); }
+
+function addStory(type,text){ const sc = document.getElementById('story-content'); if(sc){ const d=document.createElement('div'); d.innerHTML = `<strong>[${type}]</strong> — ${text}`; sc.appendChild(d); sc.scrollTop = sc.scrollHeight; } }
+
+// Inventory / CG / Bond helpers (re-using previously declared functions/vars)
+let inventoryData = JSON.parse(localStorage.getItem('inventory')||'{}'); if(Object.keys(inventoryData).length===0) inventoryData = {"rose":{"name":"Rose","desc":"A pretty rose.","count":2},"cookie":{"name":"Cookie","desc":"Yummy cookie.","count":3}};
+function saveInventory(){ localStorage.setItem('inventory', JSON.stringify(inventoryData)); }
+function renderInventory(){ const list=document.getElementById('inventory-list'); list.innerHTML=''; for(const k in inventoryData){ const it=inventoryData[k]; const el=document.createElement('div'); el.style.background='rgba(255,255,255,0.02)'; el.style.padding='8px'; el.style.borderRadius='8px'; el.style.minWidth='110px'; el.innerHTML = `<div style='font-weight:700'>${it.name}</div><div style='font-size:12px;opacity:.8'>${it.desc}</div><div style='margin-top:6px;display:flex;gap:6px'><button class='btn' data-key='${k}'>Use</button></div><div style='margin-top:6px;opacity:.9'>x${it.count}</div>`; list.appendChild(el); }
+    document.querySelectorAll('#inventory-list .btn').forEach(b=>b.addEventListener('click', e=>{ const key = e.target.getAttribute('data-key'); useItem(key); }));
+}
+function useItem(k){ const it = inventoryData[k]; if(!it || it.count<=0){ showNotif('No item'); return; } it.count--; saveInventory(); renderInventory(); showNotif('Used '+it.name); addStory('Item','Used '+it.name); if(k==='rose'){ setBond(bond+6); spawnSparkles(); } if(k==='cookie'){ setHP(hp+12); } }
+
+// Save inventory hook
+document.getElementById('open-inv-btn').addEventListener('click', ()=>{ document.getElementById('inventory').style.display='block'; renderInventory(); });
+document.getElementById('inv-close').addEventListener('click', ()=>{ document.getElementById('inventory').style.display='none'; });
+
+// Dorm hooks
+document.getElementById('open-dorm-btn').addEventListener('click', ()=>{ document.getElementById('dorm').style.display='flex'; });
+document.getElementById('dorm-close').addEventListener('click', ()=>{ document.getElementById('dorm').style.display='none'; });
+
+// Gallery hooks
+function toggleGallery(){ const g=document.getElementById('cg-gallery'); g.style.display = (g.style.display==='block')? 'none':'block'; renderGallery(); }
+document.getElementById('open-gallery-btn').addEventListener('click', toggleGallery);
+
+// Story log
+document.getElementById('story-close').addEventListener('click', ()=>{ document.getElementById('story-log').style.display='none'; });
+
+// Teleport UI
+document.getElementById('open-teleport-btn').addEventListener('click', ()=>{ document.getElementById('teleport-menu').style.display = (document.getElementById('teleport-menu').style.display==='block')? 'none' : 'block'; });
+
+// Save slots UI
+function renderSlots(){ openSaveUI(); }
+
+// quick init: render inventory
+saveInventory(); renderInventory();
+
+console.log('Ultimate engine ready — all features (Live2D hooks, raid, VN, save/load, personalities, multizone) are available.');
+
+</script>
+</body>
+</html>
